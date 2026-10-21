@@ -1,6 +1,8 @@
 # BÁO CÁO TOÀN DIỆN: CÔNG CỤ SỬ DỤNG & BỘ QUY TẮC GÁN NHÃN ABSA
 **Dự án:** Thu thập, Biểu diễn Dữ liệu & Phân tích Cảm xúc Đa Khía Cạnh (ABSA) Confession Sinh viên UIT  
 **Mã nguồn:** [ThienPhucNg-1410/CrawlUITData](https://github.com/ThienPhucNg-1410/CrawlUITData)  
+**Trang Web Demo Trực Tuyến:** [https://thienphucng-1410.github.io/CrawlUITData/](https://thienphucng-1410.github.io/CrawlUITData/)  
+**Cổng Duyệt Nhãn ABSA:** [https://thienphucng-1410.github.io/CrawlUITData/review.html](https://thienphucng-1410.github.io/CrawlUITData/review.html)  
 **Tập dữ liệu chuẩn:** 4.422 bài viết | 16.231 bình luận | 4.402 mẫu ABSA gán nhãn
 
 ---

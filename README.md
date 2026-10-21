@@ -1,12 +1,30 @@
 # 🎓 UIT Confession Data Crawling & Sentiment Analytics Dashboard (ABSA)
 
+[![Live Web Dashboard](https://img.shields.io/badge/🚀%20Live%20Web%20Dashboard-Visit%20Online-059669?style=for-the-badge&logo=googlechrome&logoColor=white)](https://thienphucng-1410.github.io/CrawlUITData/)
+[![ABSA Review Portal](https://img.shields.io/badge/🏷️%20ABSA%20Review%20Portal-Open%20Viewer-7c3aed?style=for-the-badge&logo=safari&logoColor=white)](https://thienphucng-1410.github.io/CrawlUITData/review.html)
+
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Database](https://img.shields.io/badge/Database-SQLite3%20(WAL)-emerald.svg)](https://www.sqlite.org/)
 [![Dataset Status](https://img.shields.io/badge/Dataset-100%25%20Completed-brightgreen.svg)]()
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Active-success.svg)](https://thienphucng-1410.github.io/CrawlUITData/)
 [![License](https://img.shields.io/badge/License-MIT-orange.svg)]()
 
+> 🌟 **TRẢI NGHIỆM DỰ ÁN TRỰC TIẾP TRÊN TRÌNH DUYỆT (KHÔNG CẦN CÀI ĐẶT / TẢI VỀ):**  
+> 🔗 **Web Dashboard Phân tích Cảm xúc:** [**https://thienphucng-1410.github.io/CrawlUITData/**](https://thienphucng-1410.github.io/CrawlUITData/)  
+> 🔗 **Giao diện Duyệt & Gán nhãn ABSA (1.308 mẫu):** [**https://thienphucng-1410.github.io/CrawlUITData/review.html**](https://thienphucng-1410.github.io/CrawlUITData/review.html)  
+> 
 > **Dự án:** Thu thập dữ liệu tự động, Biểu diễn Trực quan và Phân tích Cảm xúc theo Khía cạnh (Aspect-Based Sentiment Analysis - ABSA) từ diễn đàn Confession Sinh viên Trường Đại học Công nghệ Thông tin (ĐHQG-HCM).  
 > **Giai đoạn dữ liệu:** `01/06/2026 → 18/10/2026` (5 tháng hoàn chỉnh).
+
+---
+
+## 🔗 Liên Kết Nhanh Cho Người Xem
+| Mục tiêu | Đường dẫn trực tiếp | Mô tả |
+| :--- | :--- | :--- |
+| 📊 **Dashboard Trực quan hóa** | 👉 [**Xem Dashboard Online**](https://thienphucng-1410.github.io/CrawlUITData/) | 5 biểu đồ phân tích 300 DPI, Dark/Light Mode, KPI tương tác. |
+| 🏷️ **Cổng Duyệt Nhãn ABSA** | 👉 [**Mở Cổng Duyệt Nhãn**](https://thienphucng-1410.github.io/CrawlUITData/review.html) | Duyệt, tìm kiếm và lọc nhãn 7 khía cạnh trực quan. |
+| 📑 **Báo Cáo Công Cụ & Quy Tắc** | 👉 [**Đọc Báo Cáo Kỹ Thuật**](docs/BAO_CAO_CONG_CU_VA_QUY_TAC_GAN_NHAN.md) | Chi tiết về crawler Selenium, SQLite WAL và quy tắc ABSA. |
+| 📥 **Tải Trọn Bộ Dữ Liệu Excel** | 👉 [**dataset_uit_posts_and_comments.xlsx**](dataset_uit_posts_and_comments.xlsx) | 4.422 bài viết, 16.231 bình luận và phân rã 7 loại cảm xúc. |
 
 ---
 
