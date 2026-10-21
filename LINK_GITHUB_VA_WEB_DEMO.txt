@@ -1,0 +1,29 @@
+================================================================================
+BÁO CÁO NỘP BÀI: THU THẬP DỮ LIỆU & PHÂN TÍCH CẢM XÚC CONFESSION UIT (ABSA)
+================================================================================
+
+1. ĐƯỜNG DẪN DỰ ÁN VÀ SẢN PHẨM:
+--------------------------------------------------------------------------------
+- GitHub Repository (Mã nguồn & Dữ liệu):
+  https://github.com/ThienPhucNg-1410/CrawlUITData
+
+- Web Dashboard Biểu Diễn Trực Quan (Xem trực tiếp Online không cần cài đặt):
+  https://thienphucng-1410.github.io/CrawlUITData/
+
+- Cổng Duyệt & Gán Nhãn ABSA Trực Quan (1.308 mẫu):
+  https://thienphucng-1410.github.io/CrawlUITData/review.html
+
+2. TỔNG QUAN BỘ DỮ LIỆU THU THẬP ĐƯỢC (TỪ 01/06/2026 ĐẾN 18/10/2026):
+--------------------------------------------------------------------------------
+- Tổng số bài viết (Posts):        4.422 bài
+- Tổng số bình luận (Comments):    16.231 bình luận (kèm cấu trúc phân cấp parent_id)
+- Tổng lượt biểu cảm (Reactions):  254.387 lượt (bóc tách 7 cảm xúc: Like, Haha, Sad, Love, Care, Wow, Angry)
+- Dữ liệu gán nhãn ABSA (Gold):    4.402 bài viết gán nhãn theo 7 khía cạnh đào tạo UIT
+
+3. TÀI LIỆU KỸ THUẬT & HƯỚNG DẪN:
+--------------------------------------------------------------------------------
+- Báo cáo công cụ & quy tắc gán nhãn: Xem chi tiết trong file docs/BAO_CAO_CONG_CU_VA_QUY_TAC_GAN_NHAN.md
+- File dữ liệu hoàn chỉnh dạng Excel: dataset_uit_posts_and_comments.xlsx (đính kèm trong repo)
+- File dữ liệu dạng SQLite:          data/raw/raw.sqlite
+
+================================================================================
