@@ -176,3 +176,4 @@ Dữ liệu được trích xuất từ tập chuẩn **4.402 mẫu ABSA (`gold.
 
 ## 5. Kết Luận
 Báo cáo trên cung cấp đầy đủ cơ sở khoa học, công cụ thực thi và quy tắc nghiệp vụ cho bài toán Phân tích Cảm xúc theo Khía cạnh (ABSA) trên dữ liệu mạng xã hội sinh viên UIT. Toàn bộ mã nguồn, cơ sở dữ liệu SQLite, tập nhãn Gold và ứng dụng Web dashboard đã được đóng gói hoàn chỉnh để người khác có thể tái hiện và phát triển tiếp các mô hình học máy (PhôBERT, ViBERT, LLMs).
+

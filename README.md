@@ -23,18 +23,25 @@
 
 ## 🚀 HƯỚNG DẪN XEM WEB BIỂU DIỄN DỮ LIỆU (QUAN TRỌNG)
 
-Dự án đã tích hợp sẵn một máy chủ Web cục bộ kèm giao diện trực quan hóa cao cấp, **hoạt động ngoại tuyến 100% (không lo lỗi CDN hay mất mạng)**.
+Dự án cung cấp cả 2 hình thức: **Xem trực tuyến ngay trên trình duyệt (không cần tải về)** hoặc **Chạy cục bộ kèm kết nối Database động (Local Server)**.
 
-### Cách 1: Khởi động 1-Click trên Windows (Nhanh nhất)
+### 🌐 Cách 1: Xem Trực Tuyến 1-Click qua GitHub Pages (Không cần tải về máy)
+Dành cho người xem muốn duyệt nhanh toàn bộ biểu đồ 300 DPI, các KPI và giao diện gán nhãn mà không cần tải code hay cài đặt Python:
+👉 **Truy cập trang Web Trực tuyến:** [**https://thienphucng-1410.github.io/CrawlUITData/**](https://thienphucng-1410.github.io/CrawlUITData/)
+
+---
+
+### 💻 Cách 2: Khởi động 1-Click trên Windows (Đầy đủ tính năng tra cứu Database)
+Dành cho người dùng đã tải repository về máy và muốn sử dụng tính năng tìm kiếm động trên toàn bộ 4.422 bài viết và 16.231 bình luận:
 Nhấp đúp chuột vào tệp:
 ```cmd
 run_dashboard.bat
 ```
-*(Cửa sổ dòng lệnh sẽ tự khởi chạy máy chủ và tự động mở trình duyệt web hiển thị trang Dashboard).*
+*(Cửa sổ dòng lệnh sẽ tự khởi chạy máy chủ cục bộ và tự động mở trình duyệt web hiển thị trang Dashboard).*
 
 ---
 
-### Cách 2: Khởi động bằng dòng lệnh (Windows / macOS / Linux)
+### ⚙️ Cách 3: Khởi động bằng dòng lệnh (Windows / macOS / Linux)
 
 1. **Cài đặt các thư viện cần thiết:**
    ```bash
