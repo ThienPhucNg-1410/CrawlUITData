@@ -1,0 +1,14 @@
+selenium>=4.20
+pyyaml
+pandas
+openpyxl
+numpy
+scikit-learn
+dateparser
+emoji
+underthesea
+matplotlib
+seaborn
+plotly
+tqdm
+pytest

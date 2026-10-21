@@ -1,0 +1,12 @@
+# Từ khóa lọc "liên quan UIT" và gán aspect sơ bộ (rule-based, chỉnh theo dữ liệu thật)
+relevance_keywords: [uit, đhcntt, "đh cntt", trường, khoa, giảng viên, "thầy", "cô", gv, sv,
+  sinh viên, học phí, "đăng ký môn", "đkmh", môn học, thi, điểm, tín chỉ,
+  "đoàn", hội sinh viên, "phòng đào tạo", daa, "thư viện", "học kỳ", "học kì", "tốt nghiệp"]
+aspects:
+  hoc_phi: ["học phí", "miễn giảm", "học bổng", "hp"]
+  giang_vien: ["giảng viên", "thầy", "cô", "gv", "dạy"]
+  chuong_trinh: ["chương trình", "môn học", "tín chỉ", "đồ án", "syllabus", "tự chọn"]
+  co_so_vat_chat: ["phòng học", "máy lạnh", "wifi", "thư viện", "nhà vệ sinh", "căn tin", "cơ sở"]
+  thi_cu: ["thi", "điểm", "phúc khảo", "gian lận", "coi thi", "cuối kỳ", "giữa kỳ"]
+  hanh_chinh: ["phòng đào tạo", "daa", "đăng ký môn", "đkmh", "thủ tục", "xác nhận", "giấy tờ", "hành chính"]
+  doan_hoi: ["đoàn", "hội sinh viên", "clb", "câu lạc bộ", "hoạt động", "mhx", "mùa hè xanh"]

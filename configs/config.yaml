@@ -1,0 +1,51 @@
+# ====== Cấu hình trung tâm (phần 1, 3, 4) ======
+page_url: "https://www.facebook.com/groups/congdongsinhvien.hcmuit/?sorting_setting=CHRONOLOGICAL"   # URL nhóm, xếp bài mới nhất trước
+start_date: "2026-01-01"      # cào từ 1/1/2026 đến 6/10/2026
+end_date:   "2026-10-06"      # ngày kết thúc cào
+browser_profile_dir: "browser_profile"            # hồ sơ riêng, tài khoản PHỤ
+ui_language: "vi"
+
+paths:
+  raw_db: "data/raw/raw.sqlite"
+  clean_dir: "data/clean"
+  labeled_dir: "data/labeled"
+  log_dir: "logs"
+  cooldown_file: "data/raw/.cooldown"
+
+rounds:                       # chia vòng theo hash(post_id) % 100
+  1: [0, 30]
+  2: [30, 65]
+  3: [65, 100]
+
+comments_filter:              # chỉ lấy bình luận cho bài liên quan + tương tác cao
+  only_relevant: true
+  min_comments: 3
+  min_reactions: 10
+
+session:
+  max_posts: 120              # tăng số lượng bài cào mỗi phiên
+  max_minutes: 60             # tối đa 60 phút mỗi phiên
+  warmup_max_posts: 80        # tăng chỉ tiêu lên 80 bài để cào nhanh hơn
+  min_gap_hours: 0.05         # cho phép chạy liên tục không bị kẹt giãn cách
+  max_expand_clicks: 10       # giới hạn click mở rộng
+
+delays:                       # giây, [min, max] (tối ưu nhịp để cào nhanh và mượt)
+  scroll: [3, 6]
+  after_expand: [3, 7]
+  between_posts: [5, 10]
+long_pause: {probability: 0.05, range: [15, 30]}
+hard_stop_cooldown_hours: 36  # 24–48h
+
+selectors:                    # CẦN HIỆU CHỈNH ở tuần 2 (xem docs/CALIBRATION.md)
+  article: 'div[role="article"]'
+  permalink: 'a[href*="/posts/"], a[href*="pfbid"]'
+  text_nodes: 'div[dir="auto"]'
+  see_more_xpath: ".//div[@role='button'][normalize-space()='Xem thêm' or normalize-space()='See more']"
+  more_comments_xpath: "//span[contains(.,'Xem thêm bình luận') or contains(.,'View more comments') or contains(.,'Xem tất cả phản hồi') or contains(.,'View all') and contains(.,'repl')]"
+  reply_xpath: "//span[contains(.,'phản hồi') or contains(.,'repl')][ancestor::div[@role='button']]"
+
+health_check:                 # post mẫu đã biết kết quả (điền tay ở tuần 2)
+  - {url: "https://www.facebook.com/groups/congdongsinhvien.hcmuit/posts/1135150639047664/", expect_min_text_len: 20, expect_has_time: true}
+
+labels: [tieu_cuc, trung_tinh, tich_cuc, hoi_dap, khong_lien_quan]
+split: {test_time_fraction: 0.2, val_group_fraction: 0.15, seed: 42}

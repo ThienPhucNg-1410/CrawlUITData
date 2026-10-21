@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UIT Confession – Data Representation & Sentiment Analytics Dashboard</title>
+  <script src="/static/tailwind.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    .hidden {
+      display: none !important;
+    }
+    :root {
+      --background: #0b1120;
+      --card: #151e32;
+      --card-hover: #1e293b;
+      --border: #243049;
+      --foreground: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing: 0.015em;
+      word-spacing: 0.035em;
+      line-height: 1.65;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 1.25rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover {
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.4);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-khong-lien-quan { background: #334155; color: #cbd5e1; }
+    .badge-trung-tinh { background: #1e3a8a; color: #bfdbfe; }
+    .badge-hoi-dap { background: #854d0e; color: #fef08a; }
+    .badge-tich-cuc { background: #065f46; color: #a7f3d0; }
+    .badge-tieu-cuc { background: #991b1b; color: #fecaca; }
+    .badge-aspect { background: #312e81; color: #c7d2fe; }
+    .badge-parent { background: #065f46; color: #6ee7b7; border: 1px solid #059669; }
+    .badge-reply { background: #4c1d95; color: #ddd6fe; border: 1px solid #7c3aed; }
+    .nav-btn {
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+      transform: translateY(-1px);
+    }
+    .chart-container {
+      background: #0f172a;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .insight-card {
+      background: rgba(30, 41, 59, 0.6);
+      border-left: 4px solid #6366f1;
+      padding: 0.85rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    /* ============================================================ */
+    /* CHẾ ĐỘ SÁNG (LIGHT THEME OVERRIDES)                         */
+    /* ============================================================ */
+    body.light-theme {
+      --background: #f8fafc;
+      --card: #ffffff;
+      --card-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --foreground: #0f172a;
+      --muted: #64748b;
+    }
+    body.light-theme .metric-card {
+      background: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
+    }
+    body.light-theme .metric-card:hover {
+      box-shadow: 0 14px 25px -4px rgba(0, 0, 0, 0.09);
+    }
+    body.light-theme .chart-container {
+      background: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme .insight-card {
+      background: #f1f5f9 !important;
+      color: #1e293b !important;
+      border-left-color: #4f46e5 !important;
+    }
+    body.light-theme .insight-card strong {
+      color: #0f172a !important;
+    }
+    body.light-theme .text-white {
+      color: #0f172a !important;
+    }
+    body.light-theme .text-slate-100 {
+      color: #1e293b !important;
+    }
+    body.light-theme .text-slate-200,
+    body.light-theme .text-slate-300 {
+      color: #334155 !important;
+    }
+    body.light-theme .text-slate-400 {
+      color: #64748b !important;
+    }
+    body.light-theme .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    body.light-theme .bg-slate-900,
+    body.light-theme .bg-slate-950,
+    body.light-theme .bg-\[\#0b1120\],
+    body.light-theme .bg-\[\#111827\] {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme .bg-slate-900\/90,
+    body.light-theme .bg-slate-900\/80,
+    body.light-theme .bg-slate-950\/80,
+    body.light-theme .bg-slate-950\/70 {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme .bg-slate-800,
+    body.light-theme .bg-slate-800\/50,
+    body.light-theme .bg-slate-800\/60,
+    body.light-theme .bg-slate-800\/70 {
+      background-color: #f1f5f9 !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme .border-slate-800,
+    body.light-theme .border-slate-700,
+    body.light-theme .border-slate-800\/80,
+    body.light-theme .border-slate-700\/60,
+    body.light-theme .border-slate-700\/50 {
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme table thead {
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      border-bottom: 2px solid #e2e8f0 !important;
+    }
+    body.light-theme table tbody tr {
+      border-color: #f1f5f9 !important;
+    }
+    body.light-theme table tbody tr:hover {
+      background-color: #f8fafc !important;
+    }
+    body.light-theme input,
+    body.light-theme select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-theme input::placeholder {
+      color: #94a3b8 !important;
+    }
+    body.light-theme #postDetailModal > div {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-theme #postDetailModal .bg-slate-900\/90 {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme #postDetailModal .bg-slate-900\/80 {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-theme #postDetailModal .bg-slate-950\/80 {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+    body.light-theme .portal-card-absa {
+      background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #ffffff 100%) !important;
+      border-color: #a7f3d0 !important;
+    }
+  </style>
+</head>
+<body class="p-3 md:p-6 antialiased">
+  <div class="max-w-7xl mx-auto space-y-7">
+
+    <!-- Top Navigation Header -->
+    <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[var(--border)]">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">🎓</span>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+              UIT Confession – Biểu Diễn Dữ Liệu & Phân Tích Cảm Xúc
+            </h1>
+            <p class="text-xs md:text-sm text-[var(--muted)] mt-1">
+              Phân tích hành vi, thời gian, khía cạnh đào tạo (ABSA) & cấu trúc phân cấp bình luận
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5 text-xs">
+        <span class="bg-[var(--card)] px-3 py-2 rounded-lg border border-[var(--border)] text-[var(--muted)]">
+          📅 Phạm vi: <strong class="text-white" id="timeRangeVal">01/06/2026 → 18/10/2026</strong>
+        </span>
+        <a href="#section-absa-portal" class="nav-btn bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-md">
+          <span>📝</span> Gán Nhãn ABSA (4.402 bài)
+        </a>
+        <a href="#section-visual-analytics" class="nav-btn bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-3.5 py-2 rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm">
+          <span>📊</span> 5 Biểu Đồ Chuyên Sâu
+        </a>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="nav-btn bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3.5 py-2 rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm transition-all" title="Chuyển chế độ Sáng / Tối">
+          <span id="themeToggleIcon" class="text-sm">☀️</span>
+          <span id="themeToggleText">Chế độ Sáng</span>
+        </button>
+        <button onclick="fetchLiveStats(); reloadCurrentTab();" class="nav-btn bg-blue-600 hover:bg-blue-500 text-white font-medium px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Làm Mới
+        </button>
+      </div>
+    </header>
+
+    <!-- DUAL PROGRESS SECTION: POSTS CRAWLER VS COMMENT HIERARCHY -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      
+      <!-- Card 1: Tiến độ bài viết -->
+      <div class="metric-card bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">1. Tập Dữ Liệu Bài Viết Gốc (Posts)</h2>
+          </div>
+          <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="postStatusBadge">
+            4.422 Bài Đã Sẵn Sàng (100%)
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+          Đầy đủ 100% nội dung thô, 7 loại biểu cảm (Like, Haha, Sad, Love...), lượt shares, và mốc thời gian từ 01/06/2026 đến 18/10/2026.
+        </p>
+
+        <div class="w-full bg-slate-800 rounded-full h-2.5 p-0.5 overflow-hidden border border-slate-700/80 mb-3">
+          <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-1.5 rounded-full" style="width: 100%"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center text-xs pt-2 border-t border-slate-800/80">
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Tổng bài trong DB</span>
+            <span class="text-sm font-bold text-indigo-400 font-mono" id="totalPostsVal">4.422</span>
+          </div>
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Lượt cảm xúc (Reactions)</span>
+            <span class="text-sm font-bold text-rose-400 font-mono" id="totalReactionsVal">254.387</span>
+          </div>
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Trạng thái tập dữ liệu</span>
+            <span class="text-sm font-bold text-emerald-400 font-mono" id="discoveredPostsVal">Hoàn tất T6 - T10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Tiến độ phân cấp & cảm xúc bình luận -->
+      <div class="metric-card bg-gradient-to-br from-slate-900 via-slate-900 to-purple-950/40 border border-purple-500/30">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">2. Phân Cấp Cha-Con & Cảm Xúc Bình Luận</h2>
+          </div>
+          <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="cmtEnrichPctBadge">
+            Đã đồng bộ 100% (16.231 bình luận)
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+          Đầy đủ cấu trúc phân cấp (bình luận gốc vs phản hồi con <code>parent_id</code>) và bóc tách tương tác cảm xúc từng comment.
+        </p>
+
+        <!-- Dynamic progress bar from API -->
+        <div class="w-full bg-slate-800 rounded-full h-2.5 p-0.5 overflow-hidden border border-slate-700/80 mb-3">
+          <div id="cmtProgressBar" class="bg-gradient-to-r from-purple-500 via-indigo-500 to-pink-500 h-1.5 rounded-full transition-all duration-500" style="width: 100%"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center text-xs pt-2 border-t border-slate-800/80">
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Tổng bình luận</span>
+            <span class="text-sm font-bold text-emerald-400 font-mono" id="totalCommentsVal">16.231</span>
+          </div>
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Phản hồi con (Replies)</span>
+            <span class="text-sm font-bold text-purple-300 font-mono" id="commentsRepliesVal">737 replies</span>
+          </div>
+          <div class="bg-slate-800/50 p-2 rounded">
+            <span class="text-slate-400 block text-[11px]">Có Reactions comment</span>
+            <span class="text-sm font-bold text-pink-400 font-mono" id="commentsReactionsVal">9.701 có react</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECTION: PROMINENT ABSA REVIEW & LABELING SHOWCASE (FULL WIDTH) -->
+    <section class="metric-card portal-card-absa relative overflow-hidden rounded-2xl p-6 md:p-8 bg-gradient-to-r from-emerald-950/80 via-teal-950/50 to-slate-900 border-2 border-emerald-500/60 shadow-2xl hover:border-emerald-400 transition-all group" id="section-absa-portal">
+      <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-3 max-w-3xl">
+          <div class="flex items-center gap-3">
+            <span class="w-14 h-14 rounded-2xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-3xl shadow-inner group-hover:scale-105 transition-transform">
+              📝
+            </span>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">Không Gian Khoa Học Dữ Liệu</span>
+                <span class="text-[11px] font-mono font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                  Gold Dataset • 4.402 Mẫu
+                </span>
+              </div>
+              <h2 class="text-xl md:text-2xl font-black text-white mt-0.5">
+                Giao Diện Duyệt & Gán Nhãn Cảm Xúc Theo Khía Cạnh (ABSA)
+              </h2>
+            </div>
+          </div>
+
+          <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+            Hệ thống chuyên dụng phục vụ nghiên cứu & gán nhãn chuẩn: Khám phá toàn bộ <strong>4.402 bài viết học đường</strong> đã được bóc tách và phân loại theo <strong>7 khía cạnh đào tạo UIT</strong> (Chương trình, Thi cử, Giảng viên, Cơ sở vật chất, Học phí, Hành chính, Đoàn hội). Cho phép tra cứu từ khóa, lọc theo sắc thái cảm xúc, và <strong>hiệu chỉnh nhãn 1-click lưu tức thì vào SQLite & CSV</strong>.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+            <span class="px-3 py-1.5 rounded-lg bg-emerald-900/40 border border-emerald-700/50 text-emerald-200 font-medium">🏷️ 7 Khía cạnh đào tạo chuẩn</span>
+            <span class="px-3 py-1.5 rounded-lg bg-teal-900/40 border border-teal-700/50 text-teal-200 font-medium">✏️ Hiệu chỉnh nhãn tương tác</span>
+            <span class="px-3 py-1.5 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-300 font-medium">💾 Tự động đồng bộ gold.csv & SQLite</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row lg:flex-col gap-3 min-w-[280px]">
+          <a href="/review" target="_blank" class="inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-sm md:text-base shadow-xl shadow-emerald-600/30 hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all text-center">
+            <span>🎯 Mở Trình Gán Nhãn ABSA</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+          <span class="text-[11px] text-center text-slate-400">
+            Mở trong tab riêng biệt để thao tác tiện lợi
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: BỘ 5 BIỂU ĐỒ & GIẢI THÍCH CHI TIẾT TỪNG KHÍA CẠNH (IN-DEPTH INSIGHTS) -->
+    <section id="section-visual-analytics" class="space-y-6">
+      <div class="border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">📊</span>
+          <h2 class="text-xl font-black text-white">Hệ Thống Biểu Đồ & Giải Thích Phân Tích Chuyên Sâu</h2>
+        </div>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">
+          Báo cáo diễn giải toàn diện theo yêu cầu biểu diễn dữ liệu (Bieudiendulieu.md): Mật độ thời gian, khía cạnh học đường & hành vi sinh viên UIT.
+        </p>
+      </div>
+
+      <!-- Item 1: Phân phối 7 loại cảm xúc -->
+      <div class="metric-card grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 chart-container p-2 relative group cursor-pointer" onclick="openImageZoomModal('/plots/1_emotions_distribution.png', 'Biểu Đồ 1 • Cơ Cấu 7 Sắc Thái Biểu Cảm')">
+          <img src="/plots/1_emotions_distribution.png" alt="Phân bố 7 loại cảm xúc" class="w-full h-auto rounded-lg shadow-lg group-hover:opacity-95 transition-all" />
+          <div class="absolute inset-2 bg-slate-950/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg backdrop-blur-[1px]">
+            <span class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5 transition-transform group-hover:scale-105">
+              <span>🔍</span> Phóng To Biểu Đồ
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          <div class="flex items-center justify-between text-indigo-400 font-bold text-xs uppercase tracking-wider">
+            <span>🎭 Biểu Đồ 1 • Phân Phối Cảm Xúc Tổng Thể</span>
+            <button onclick="openImageZoomModal('/plots/1_emotions_distribution.png', 'Biểu Đồ 1 • Cơ Cấu 7 Sắc Thái Biểu Cảm')" class="text-[11px] bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 border border-indigo-500/40 px-2 py-0.5 rounded transition-colors flex items-center gap-1 font-semibold">
+              <span>🔍 Phóng to</span>
+            </button>
+          </div>
+          <h3 class="text-base font-bold text-white">Cơ Cấu 7 Sắc Thái Biểu Cảm Trên UIT Confessions</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Tổng cộng <strong>254.387 lượt cảm xúc</strong> được ghi nhận trên toàn bộ 4.422 bài viết (01/06/2026 → 18/10/2026). Cấu trúc cảm xúc phản ánh rõ nét đặc trưng tâm lý học đường:
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="insight-card">
+              <strong class="text-blue-400">👍 Like (Thích) - 54.5% (116.235 lượt):</strong> Phản ứng mặc định thể hiện sự tiếp nhận thông tin, đồng thuận hoặc đọc qua bài viết.
+            </div>
+            <div class="insight-card border-amber-500">
+              <strong class="text-amber-400">😆 Haha (Cười) - 34.7% (74.032 lượt):</strong> Tỷ lệ cực cao! Phản ánh <em>"văn hóa tự trào"</em> (self-deprecating humor) của sinh viên công nghệ thông tin. Các chủ đề khó khăn (rớt môn, trễ deadline, bug code) luôn được đối diện bằng lăng kính hài hước thay vì tiêu cực.
+            </div>
+            <div class="insight-card border-rose-500">
+              <strong class="text-rose-400">😢 Sad (Buồn) - 5.8% (12.312 lượt):</strong> Tập trung ở các bài tâm sự tình cảm đổ vỡ, áp lực gia đình và định hướng sự nghiệp năm cuối.
+            </div>
+            <div class="insight-card border-pink-500">
+              <strong class="text-pink-400">❤️ Love (Yêu thích) - 4.7% (9.932 lượt):</strong> Dành cho bài viết cảm ơn thầy cô, chia sẻ tài liệu hữu ích và tìm đồ rơi thành công.
+            </div>
+            <div class="insight-card border-slate-500">
+              <strong class="text-slate-400">😡 Angry (Phẫn nộ) - 8 lượt (0.004%):</strong> Cực kỳ hiếm hoi. Sinh viên hầu như không bấm phẫn nộ công khai mà chuyển sang tranh luận dưới bình luận.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2: Heatmap 24h x 7 ngày -->
+      <div class="metric-card grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 chart-container p-2 relative group cursor-pointer" onclick="openImageZoomModal('/plots/2_hourly_weekly_heatmap.png', 'Biểu Đồ 2 • Nhiệt Đồ Mật Độ 24h × 7 Ngày')">
+          <img src="/plots/2_hourly_weekly_heatmap.png" alt="Heatmap 24h x 7 ngày" class="w-full h-auto rounded-lg shadow-lg group-hover:opacity-95 transition-all" />
+          <div class="absolute inset-2 bg-slate-950/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg backdrop-blur-[1px]">
+            <span class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5 transition-transform group-hover:scale-105">
+              <span>🔍</span> Phóng To Biểu Đồ
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          <div class="flex items-center justify-between text-emerald-400 font-bold text-xs uppercase tracking-wider">
+            <span>⏱️ Biểu Đồ 2 • Phân Tích Hành Vi & Thời Gian</span>
+            <button onclick="openImageZoomModal('/plots/2_hourly_weekly_heatmap.png', 'Biểu Đồ 2 • Nhiệt Đồ Mật Độ 24h × 7 Ngày')" class="text-[11px] bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 border border-emerald-500/40 px-2 py-0.5 rounded transition-colors flex items-center gap-1 font-semibold">
+              <span>🔍 Phóng to</span>
+            </button>
+          </div>
+          <h3 class="text-base font-bold text-white">Nhiệt Đồ Mật Độ Đăng Bài & Lượng Tương Tác 24 Giờ × 7 Ngày</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Phân tích thói quen sinh hoạt và nhịp sinh học của cộng đồng sinh viên thông qua thời điểm xuất bản confession:
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="insight-card border-emerald-500">
+              <strong class="text-emerald-400">🔥 Khung Giờ Vàng (20h00 - 23h00):</strong> Là thời điểm mật độ đăng bài và lượng cảm xúc bùng nổ mạnh nhất trong ngày. Lúc này sinh viên kết thúc giờ học trên giảng đường, trở về phòng trọ / KTX và lướt mạng xã hội.
+            </div>
+            <div class="insight-card border-indigo-500">
+              <strong class="text-indigo-400">📅 Ngày Trong Tuần (Chủ Nhật & Thứ Ba):</strong> Tối Chủ nhật có mật độ bài cao nhất do tâm lý "chuẩn bị bước vào tuần học mới". Tối Thứ ba là cao điểm thứ hai khi sinh viên nhận xong đề bài tập lớn và bài tập thực hành lab.
+            </div>
+            <div class="insight-card border-purple-500">
+              <strong class="text-purple-400">🌙 Đặc Thù "Cú Đêm" (00h00 - 03h00 Sáng):</strong> Khác với các fanpage thông thường nơi tương tác về 0, UIT Confession vẫn ghi nhận lượng đăng đáng kể lúc rạng sáng, phản ánh rõ nếp sinh hoạt thức khuya cày code của dân IT.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 3: Aspect Sentiment Matrix -->
+      <div class="metric-card grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 chart-container p-2 relative group cursor-pointer" onclick="openImageZoomModal('/plots/3_aspect_sentiment_matrix.png', 'Biểu Đồ 3 • Ma Trận Khía Cạnh ABSA')">
+          <img src="/plots/3_aspect_sentiment_matrix.png" alt="Ma trận khía cạnh ABSA" class="w-full h-auto rounded-lg shadow-lg group-hover:opacity-95 transition-all" />
+          <div class="absolute inset-2 bg-slate-950/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg backdrop-blur-[1px]">
+            <span class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5 transition-transform group-hover:scale-105">
+              <span>🔍</span> Phóng To Biểu Đồ
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          <div class="flex items-center justify-between text-amber-400 font-bold text-xs uppercase tracking-wider">
+            <span>🏛️ Biểu Đồ 3 • Khai Phá Khía Cạnh Đào Tạo (ABSA)</span>
+            <button onclick="openImageZoomModal('/plots/3_aspect_sentiment_matrix.png', 'Biểu Đồ 3 • Ma Trận Khía Cạnh ABSA')" class="text-[11px] bg-amber-600/30 hover:bg-amber-600 text-amber-200 border border-amber-500/40 px-2 py-0.5 rounded transition-colors flex items-center gap-1 font-semibold">
+              <span>🔍 Phóng to</span>
+            </button>
+          </div>
+          <h3 class="text-base font-bold text-white">Tỷ Trọng 4 Chủ Đề Học Đường & Sắc Thái Tương Ứng</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Phân loại tự động các confession theo 4 nhóm chủ đề đặc thù theo đề xuất <em>Bieudiendulieu.md</em>:
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="insight-card border-indigo-500">
+              <strong class="text-indigo-400">📚 Học Tập & Thi Cử (32.7%):</strong> Chiếm vị trí số 1. Các chủ đề nóng nhất gồm: Đăng ký môn học (ĐKMH), điểm quá trình, đồ án chuyên ngành, ôn thi cuối kỳ. Đây là khía cạnh nhận nhiều Haha và Sad nhất.
+            </div>
+            <div class="insight-card border-pink-500">
+              <strong class="text-pink-400">💌 Đời Sống & Tình Cảm (29.1%):</strong> Đứng thứ 2. Tìm bạn cùng tiến, crush bạn cùng lớp, tâm sự tình cảm trọ.
+            </div>
+            <div class="insight-card border-emerald-500">
+              <strong class="text-emerald-400">👨‍🏫 Giảng Viên & Đào Tạo (15.2%):</strong> Review thầy cô dạy dễ hiểu, nhiệt tình hỗ trợ lab. Nhận tỷ lệ Thả Tim (Love) cao nhất trong các khía cạnh.
+            </div>
+            <div class="insight-card border-teal-500">
+              <strong class="text-teal-400">🏢 Cơ Sở Vật Chất & Tiện Ích (10.1%):</strong> Tốc độ wifi phòng C, máy lạnh toà B, thang máy toà A, bãi giữ xe trường. Nhận tỷ lệ phản ánh tiêu cực nhiều nhất.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 4: Xu hướng theo tháng -->
+      <div class="metric-card grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 chart-container p-2 relative group cursor-pointer" onclick="openImageZoomModal('/plots/4_monthly_sentiment_trends.png', 'Biểu Đồ 4 • Xu Hướng Cảm Xúc Theo Tháng')">
+          <img src="/plots/4_monthly_sentiment_trends.png" alt="Xu hướng cảm xúc theo tháng" class="w-full h-auto rounded-lg shadow-lg group-hover:opacity-95 transition-all" />
+          <div class="absolute inset-2 bg-slate-950/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg backdrop-blur-[1px]">
+            <span class="bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5 transition-transform group-hover:scale-105">
+              <span>🔍</span> Phóng To Biểu Đồ
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          <div class="flex items-center justify-between text-sky-400 font-bold text-xs uppercase tracking-wider">
+            <span>📈 Biểu Đồ 4 • Biến Động Theo Thời Gian</span>
+            <button onclick="openImageZoomModal('/plots/4_monthly_sentiment_trends.png', 'Biểu Đồ 4 • Xu Hướng Cảm Xúc Theo Tháng')" class="text-[11px] bg-sky-600/30 hover:bg-sky-600 text-sky-200 border border-sky-500/40 px-2 py-0.5 rounded transition-colors flex items-center gap-1 font-semibold">
+              <span>🔍 Phóng to</span>
+            </button>
+          </div>
+          <h3 class="text-base font-bold text-white">Xu Hướng Cảm Xúc Qua Các Giai Đoạn Trong Năm</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Theo dõi sự dịch chuyển cảm xúc xuyên suốt 5 tháng (Tháng 6 đến Tháng 10/2026):
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="insight-card border-sky-500">
+              <strong class="text-sky-400">🏖️ Tháng 06 & 07/2026 (Kỳ Thi & Hè - 1.454 bài):</strong> Lượng tương tác tập trung vào kỳ thi học kỳ 2 và tân sinh viên hỏi kinh nghiệm xét tuyển, điểm chuẩn.
+            </div>
+            <div class="insight-card border-indigo-500">
+              <strong class="text-indigo-400">🔥 Tháng 08/2026 (Đỉnh Điểm Tuyển Sinh - 1.752 bài):</strong> Giai đoạn sôi động nhất năm! Bùng nổ các bài viết tìm bạn cùng phòng KTX, nhập học K19 và tư vấn ngành nghề CNTT.
+            </div>
+            <div class="insight-card border-blue-500">
+              <strong class="text-blue-400">🎒 Tháng 09 & 10/2026 (Khai Giảng & Vào Năm Học - 1.216 bài):</strong> Tuần lễ sinh hoạt công dân đầu khóa, đăng ký môn học (ĐKMH) và bắt đầu các buổi thực hành lab chính khóa.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 5: Tương quan độ dài văn bản với cảm xúc -->
+      <div class="metric-card grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 chart-container p-2 relative group cursor-pointer" onclick="openImageZoomModal('/plots/5_text_length_vs_sentiment.png', 'Biểu Đồ 5 • Tương Quan Độ Dài & Cảm Xúc')">
+          <img src="/plots/5_text_length_vs_sentiment.png" alt="Tương quan độ dài bài viết và cảm xúc" class="w-full h-auto rounded-lg shadow-lg group-hover:opacity-95 transition-all" />
+          <div class="absolute inset-2 bg-slate-950/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg backdrop-blur-[1px]">
+            <span class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5 transition-transform group-hover:scale-105">
+              <span>🔍</span> Phóng To Biểu Đồ
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          <div class="flex items-center justify-between text-rose-400 font-bold text-xs uppercase tracking-wider">
+            <span>📏 Biểu Đồ 5 • Tương Quan Ngôn Ngữ & Cảm Xúc</span>
+            <button onclick="openImageZoomModal('/plots/5_text_length_vs_sentiment.png', 'Biểu Đồ 5 • Tương Quan Độ Dài & Cảm Xúc')" class="text-[11px] bg-rose-600/30 hover:bg-rose-600 text-rose-200 border border-rose-500/40 px-2 py-0.5 rounded transition-colors flex items-center gap-1 font-semibold">
+              <span>🔍 Phóng to</span>
+            </button>
+          </div>
+          <h3 class="text-base font-bold text-white">Mối Liên Hệ Giữa Độ Dài Bài Viết (Text Length) & Cảm Xúc</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Phân tích thống kê cho thấy sự phân hóa sắc thái cảm xúc rất rõ rệt dựa trên số lượng từ của bài viết:
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="insight-card border-amber-500">
+              <strong class="text-amber-400">📝 Bài Viết Ngắn (&lt; 50 từ):</strong> Chiếm số lượng lớn nhất. Chủ yếu là tìm đồ rơi, hỏi giờ mở cửa thư viện, rủ chơi game -> Cảm xúc tập trung ở Like và Haha.
+            </div>
+            <div class="insight-card border-indigo-500">
+              <strong class="text-indigo-400">📖 Bài Viết Trung Bình (50 - 200 từ):</strong> Thảo luận môn học, review giảng viên, hỏi thủ tục DAA -> Phân bố cảm xúc cân bằng.
+            </div>
+            <div class="insight-card border-rose-500">
+              <strong class="text-rose-400">📜 Bài Viết Dài (&gt; 200 từ): Tỷ lệ Buồn (Sad) tăng gấp 4.2 lần!</strong> Khi sinh viên viết bài rất dài, đó là lúc họ trút bầu tâm sự sâu kín về khủng hoảng gia đình, áp lực tốt nghiệp trễ hạn hoặc thất bại trong chuyện tình cảm cá nhân.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECTION: ABSA EXPLANATION CARD (GIẢI THÍCH MẪU ABSA VÀ KHÍA CẠNH CẢM XÚC) -->
+    <section class="metric-card bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30 rounded-xl p-5 shadow-lg">
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-slate-700/60 mb-4 gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">💡</span>
+          <h2 class="text-base font-bold text-white tracking-wide">Mẫu ABSA Là Gì? (Aspect-Based Sentiment Analysis)</h2>
+          <span class="text-[11px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-mono">Chuẩn Nghiên Cứu</span>
+        </div>
+        <span class="text-xs text-slate-400">Đề tài: Phân tích cảm xúc theo khía cạnh trong Confession sinh viên UIT</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="bg-slate-800/50 p-3.5 rounded-lg border border-slate-700/50">
+          <div class="flex items-center gap-2 text-indigo-400 font-semibold text-xs mb-1.5">
+            <span>🎯</span> 1. Khái Niệm Cốt Lõi
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Thay vì gán 1 nhãn chung chung cho cả bài, <strong>ABSA</strong> bóc tách câu thành từng <strong>Khía cạnh (Aspect)</strong> riêng biệt và gán cảm xúc độc lập cho từng khía cạnh đó.
+          </p>
+        </div>
+
+        <div class="bg-slate-800/50 p-3.5 rounded-lg border border-slate-700/50">
+          <div class="flex items-center gap-2 text-emerald-400 font-semibold text-xs mb-1.5">
+            <span>🧩</span> 2. Cấu Trúc 1 Mẫu ABSA
+          </div>
+          <div class="text-[11px] text-slate-200 font-mono bg-slate-900/80 p-2 rounded border border-slate-800">
+            &lang;Văn bản, Khía cạnh, Từ khóa, Cảm xúc&rang;
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1.5">
+            Gồm: <strong>Khía cạnh</strong> (Category), <strong>Từ khóa thực thể</strong> (Target Term) và <strong>Sắc thái</strong> (Polarity).
+          </p>
+        </div>
+
+        <div class="bg-slate-800/50 p-3.5 rounded-lg border border-slate-700/50">
+          <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs mb-1.5">
+            <span>❤️</span> 3. Cảm Xúc Ngôn Ngữ vs FB Reactions
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            <strong>FB Reactions</strong> là tương tác xã hội của người đọc. Trong khi <strong>ABSA</strong> bóc tách sắc thái thái độ thực sự của người viết đối với từng thực thể đào tạo.
+          </p>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-lg bg-slate-900/90 border border-slate-700/60 text-xs">
+        <div class="text-slate-300 mb-2">
+          📝 <strong>Ví dụ minh họa thực tế 1 câu Confession UIT:</strong>
+          <span class="text-amber-200 italic font-sans block mt-1">"Thầy Dũng dạy môn Mạng máy tính siêu nhiệt tình và dễ hiểu, nhưng wifi phòng C301 như rùa bò rớt mạng liên tục, máy lạnh thì chảy nước bực mình ghê."</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-800">
+          <div class="bg-slate-800/70 p-2.5 rounded border border-emerald-500/30">
+            <span class="text-emerald-400 font-bold block mb-1">Aspect 1: Giảng viên (giang_vien)</span>
+            <div class="text-[11px] text-slate-300">Từ khóa: <code class="bg-slate-900 px-1 py-0.5 rounded text-slate-200">Thầy Dũng</code></div>
+            <div class="text-[11px] text-slate-300 mt-0.5">Cảm xúc: <span class="text-emerald-400 font-bold">Tích cực (Khen ngợi)</span></div>
+          </div>
+          <div class="bg-slate-800/70 p-2.5 rounded border border-rose-500/30">
+            <span class="text-rose-400 font-bold block mb-1">Aspect 2: Cơ sở vật chất (co_so_vat_chat)</span>
+            <div class="text-[11px] text-slate-300">Từ khóa: <code class="bg-slate-900 px-1 py-0.5 rounded text-slate-200">wifi phòng C301</code></div>
+            <div class="text-[11px] text-slate-300 mt-0.5">Cảm xúc: <span class="text-rose-400 font-bold">Tiêu cực (Bực bội)</span></div>
+          </div>
+          <div class="bg-slate-800/70 p-2.5 rounded border border-rose-500/30">
+            <span class="text-rose-400 font-bold block mb-1">Aspect 3: Cơ sở vật chất (co_so_vat_chat)</span>
+            <div class="text-[11px] text-slate-300">Từ khóa: <code class="bg-slate-900 px-1 py-0.5 rounded text-slate-200">máy lạnh</code></div>
+            <div class="text-[11px] text-slate-300 mt-0.5">Cảm xúc: <span class="text-rose-400 font-bold">Tiêu cực (Khó chịu)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: INTERACTIVE DATA EXPLORER (BÀI VIẾT GỐC VS BÌNH LUẬN PHÂN CẤP) -->
+    <section class="metric-card">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>🔍</span> Trình Khám Phá & Đọc Dữ Liệu Thực Tế
+          </h2>
+          <p class="text-xs text-[var(--muted)] mt-0.5">
+            Duyệt trực tiếp 4.422 bài viết gốc hoặc 16.231 bình luận kèm phân cấp cha-con & lượt cảm xúc
+          </p>
+        </div>
+        
+        <!-- Tab selector -->
+        <div class="flex items-center gap-2 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+          <button id="tabBtnPosts" onclick="switchTab('posts')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow-sm flex items-center gap-1.5">
+            <span>📋</span> 4.422 Bài Viết Gốc
+          </button>
+          <button id="tabBtnComments" onclick="switchTab('comments')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            <span>💬</span> 16.231 Bình Luận (Có Phân Cấp)
+          </button>
+          <button id="tabBtnSamples" onclick="switchTab('samples')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            <span>🎭</span> 4.402 Mẫu ABSA Gán Nhãn
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-800/80 text-xs">
+        <div class="flex items-center gap-2 flex-1 max-w-md">
+          <div class="relative w-full">
+            <input id="searchInput" type="text" placeholder="Tìm kiếm nội dung, tác giả, ID..." oninput="handleSearch()" class="w-full bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:border-indigo-500" />
+            <span class="absolute left-2.5 top-2.5 text-slate-400">🔎</span>
+          </div>
+        </div>
+
+        <!-- Filter for Comments -->
+        <div id="commentFilterContainer" class="hidden flex items-center gap-2">
+          <span class="text-slate-400 text-xs">Lọc phân cấp:</span>
+          <select id="filterCommentType" onchange="loadCommentsData()" class="bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-lg px-2.5 py-2 focus:outline-none focus:border-indigo-500">
+            <option value="all">Tất cả bình luận</option>
+            <option value="roots">💬 Chỉ bình luận gốc</option>
+            <option value="replies">↳ Chỉ câu trả lời (Replies)</option>
+            <option value="reactions">❤️ Có lượt cảm xúc (>0)</option>
+          </select>
+        </div>
+
+        <!-- Filter for ABSA Samples -->
+        <div id="sampleFilterContainer" class="hidden flex items-center gap-2">
+          <select id="filterLabel" onchange="applyFilters()" class="bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-lg px-2.5 py-2 focus:outline-none focus:border-indigo-500">
+            <option value="all">Tất cả nhãn</option>
+            <option value="trung_tinh">Trung tính</option>
+            <option value="hoi_dap">Hỏi đáp</option>
+            <option value="tich_cuc">Tích cực</option>
+            <option value="khong_lien_quan">Không liên quan</option>
+          </select>
+        </div>
+        
+        <div class="text-xs text-slate-400 font-mono" id="recordCount">Đang tải dữ liệu...</div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="overflow-x-auto rounded-lg border border-slate-800">
+        <table class="w-full text-xs text-left" id="mainDataTable">
+          <thead class="text-[var(--muted)] border-b border-slate-800 bg-slate-800/60 uppercase text-[11px] tracking-wider" id="tableHeader">
+            <!-- Rendered by JS -->
+          </thead>
+          <tbody class="divide-y divide-slate-800" id="tableBody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-between mt-3 text-xs text-[var(--muted)]">
+        <span class="text-[11px] text-slate-500">Dữ liệu được cập nhật trực tiếp từ SQLite (UIT Confession Dataset)</span>
+        <button onclick="reloadCurrentTab()" class="text-indigo-400 hover:text-indigo-300 font-medium">Làm mới danh sách</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- IMAGE ZOOM MODAL (LIGHTBOX PHÓNG TO / THU NHỎ BIỂU ĐỒ) -->
+  <div id="imageZoomModal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-3 md:p-6 transition-opacity duration-200">
+    <!-- Top toolbar -->
+    <div class="w-full max-w-6xl flex flex-wrap items-center justify-between gap-3 text-white pb-3 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🔍</span>
+        <div>
+          <h4 id="zoomModalTitle" class="font-bold text-sm md:text-base text-slate-100">Xem Biểu Đồ Phóng To</h4>
+          <span class="text-xs text-slate-400">Dùng con lăn chuột hoặc các nút bên phải để phóng to / thu nhỏ. Kéo chuột để di chuyển ảnh.</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="zoomImage(-0.25)" title="Thu nhỏ (-)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 font-semibold text-xs">
+          <span>➖</span> Thu Nhỏ
+        </button>
+        <span id="zoomLevelText" class="font-mono text-xs text-indigo-300 font-bold px-2 min-w-[50px] text-center bg-slate-900 py-1 rounded border border-slate-800">100%</span>
+        <button onclick="zoomImage(0.25)" title="Phóng to (+)" class="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1">
+          <span>➕</span> Phóng To
+        </button>
+        <button onclick="resetImageZoom()" title="Đặt lại kích thước gốc" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-mono">
+          100%
+        </button>
+        <a id="zoomModalDownload" href="#" target="_blank" title="Mở ảnh gốc trong tab mới" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs flex items-center gap-1">
+          <span>↗</span> Tab Mới
+        </a>
+        <button onclick="closeImageZoomModal()" title="Đóng (Phím Esc)" class="p-2 rounded-lg bg-rose-600/30 hover:bg-rose-600 text-rose-200 border border-rose-500/40 text-xs font-bold ml-2">
+          ✕ Đóng
+        </button>
+      </div>
+    </div>
+
+    <!-- Image viewport (Scrollable / Pannable) -->
+    <div id="zoomViewport" class="flex-1 w-full max-w-6xl overflow-hidden flex items-center justify-center cursor-grab select-none my-2 relative" onwheel="handleImageWheel(event)" onmousedown="startImagePan(event)">
+      <img id="zoomModalImg" src="" alt="Biểu đồ phóng to" class="max-w-full max-h-[82vh] object-contain transition-transform duration-100 ease-out shadow-2xl rounded" style="transform: scale(1) translate(0px, 0px);" draggable="false" />
+    </div>
+
+    <!-- Bottom footer hint -->
+    <div class="text-center text-[11px] text-slate-400">
+      Mẹo: Nhấn phím <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono">Esc</kbd> để đóng, <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono">+</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono">-</kbd> để phóng to/thu nhỏ, hoặc kéo chuột để di chuyển góc nhìn.
+    </div>
+  </div>
+
+  <!-- MODAL XEM CHI TIẾT TỪNG BÀI VIẾT (FULL POST DETAIL MODAL) -->
+  <div id="postDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-black/85 backdrop-blur-md hidden transition-opacity">
+    <div class="bg-[#111827] border border-indigo-500/40 rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden text-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 md:px-6 border-b border-slate-800 bg-slate-900/90">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📄</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-white text-base md:text-lg">Chi Tiết Bài Viết Confession & Toàn Bộ Thuộc Tính</h3>
+              <span id="modalPostId" class="text-xs font-mono font-bold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">#...</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5 flex flex-wrap items-center gap-2">
+              <span>Tác giả: <strong id="modalAuthor" class="text-indigo-300">...</strong></span>
+              <span>•</span>
+              <span id="modalTime">...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="modalBtnRefresh" onclick="refreshCurrentPost()" title="Tải lại toàn văn nguyên bản bài này trực tiếp từ Facebook" class="text-xs bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+            <span>🔄 Làm mới từ FB</span>
+          </button>
+          <a id="modalPermalink" href="#" target="_blank" class="text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+            <span>Link Facebook</span> ↗
+          </a>
+          <button onclick="navigatePost(-1)" title="Bài trước (Phím ←)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <button onclick="navigatePost(1)" title="Bài kế tiếp (Phím →)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <button onclick="closePostDetailModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-300 border border-slate-700 transition-colors ml-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 md:p-6 overflow-y-auto space-y-5 flex-1 text-xs">
+        
+        <!-- Row: Cảm xúc 7 loại chi tiết & Tương tác -->
+        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+              <span>❤️</span> 1. Thuộc Tính Cảm Xúc (Từng Loại Riêng Lẻ) & Tương Tác
+            </span>
+            <div class="text-xs text-slate-400">
+              Tổng biểu cảm: <strong id="modalTotalReactions" class="text-rose-400 font-mono text-sm">0</strong>
+            </div>
+          </div>
+
+          <!-- 7 reactions breakdown grid -->
+          <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 text-center">
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-blue-500/20">
+              <div class="text-base">👍</div>
+              <div class="text-[10px] text-slate-400">Thích (Like)</div>
+              <div id="modalRxLike" class="font-bold text-blue-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-amber-500/20">
+              <div class="text-base">😆</div>
+              <div class="text-[10px] text-slate-400">Haha</div>
+              <div id="modalRxHaha" class="font-bold text-amber-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-rose-500/20">
+              <div class="text-base">😢</div>
+              <div class="text-[10px] text-slate-400">Buồn (Sad)</div>
+              <div id="modalRxSad" class="font-bold text-rose-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-pink-500/20">
+              <div class="text-base">❤️</div>
+              <div class="text-[10px] text-slate-400">Yêu (Love)</div>
+              <div id="modalRxLove" class="font-bold text-pink-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-emerald-500/20">
+              <div class="text-base">🤗</div>
+              <div class="text-[10px] text-slate-400">Quan tâm</div>
+              <div id="modalRxCare" class="font-bold text-emerald-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-purple-500/20">
+              <div class="text-base">😮</div>
+              <div class="text-[10px] text-slate-400">Wow</div>
+              <div id="modalRxWow" class="font-bold text-purple-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+            <div class="bg-slate-800/60 p-2.5 rounded-lg border border-red-500/20">
+              <div class="text-base">😡</div>
+              <div class="text-[10px] text-slate-400">Phẫn nộ</div>
+              <div id="modalRxAngry" class="font-bold text-red-400 font-mono text-sm mt-0.5">0</div>
+            </div>
+          </div>
+
+          <!-- Other interactions: Shares, Comments -->
+          <div class="flex items-center gap-6 pt-2 border-t border-slate-800/80 text-xs text-slate-300">
+            <div>🔄 Lượt chia sẻ (Shares): <strong id="modalShares" class="text-sky-400 font-mono text-sm">0</strong></div>
+            <div>💬 Lượt bình luận (Comments): <strong id="modalCommentsCount" class="text-emerald-400 font-mono text-sm">0</strong></div>
+          </div>
+        </div>
+
+        <!-- Row: Nhãn cảm xúc & Khía cạnh học đường -->
+        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+          <span class="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+            <span>🏷️</span> 2. Thuộc Tính Nhãn & Khía Cạnh Đào Tạo (ABSA)
+          </span>
+          <div class="flex flex-wrap items-center gap-4 pt-1">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs">Nhãn Cảm Xúc:</span>
+              <span id="modalLabelBadge">...</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs">Khía Cạnh:</span>
+              <div id="modalAspectsBadges" class="flex flex-wrap gap-1">...</div>
+            </div>
+          </div>
+          <div id="modalNote" class="text-[11px] text-slate-400 italic pt-1"></div>
+        </div>
+
+        <!-- Row: Toàn văn nội dung bài viết -->
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+              <span>📝</span> 3. Toàn Văn Nội Dung Bài Viết (Nguyên Bản Thô)
+            </span>
+            <span id="modalTextLength" class="text-[11px] font-mono text-indigo-400 font-bold bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-800/40">... ký tự</span>
+          </div>
+          <div id="modalFullText" class="p-4 bg-slate-950/80 rounded-lg border border-slate-800 text-slate-200 text-xs md:text-sm whitespace-pre-line font-sans select-text" style="letter-spacing: 0.02em; line-height: 1.8; word-spacing: 0.05em; word-break: break-word;">
+            Đang tải...
+          </div>
+        </div>
+
+        <!-- Row: Toàn bộ bình luận của bài viết này -->
+        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+              <span>💬</span> 4. Toàn Bộ Bình Luận Của Bài Viết Này (Cây Phân Cấp Cha - Con)
+            </span>
+            <span id="modalCommentsSummary" class="text-xs font-mono text-indigo-400 font-semibold">Đang tải bình luận...</span>
+          </div>
+
+          <div id="modalCommentsList" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 px-6 border-t border-slate-800 bg-slate-900/90 flex items-center justify-between text-xs text-slate-400">
+        <div>💡 Mẹo: Nhấn <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">Esc</kbd> để đóng, phím <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">←</kbd> / <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">→</kbd> để chuyển bài.</div>
+        <button onclick="closePostDetailModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors font-medium">
+          Đóng cửa sổ
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // THEME MANAGEMENT (CHẾ ĐỘ SÁNG / TỐI)
+    // ==========================================
+    function initTheme() {
+      const savedTheme = localStorage.getItem('uit_theme') || 'dark';
+      setTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.contains('light-theme');
+      setTheme(isLight ? 'dark' : 'light');
+    }
+
+    function setTheme(theme) {
+      const body = document.body;
+      const icon = document.getElementById('themeToggleIcon');
+      const text = document.getElementById('themeToggleText');
+      if (theme === 'light') {
+        body.classList.add('light-theme');
+        if (icon) icon.innerText = '🌙';
+        if (text) text.innerText = 'Chế độ Tối';
+        localStorage.setItem('uit_theme', 'light');
+      } else {
+        body.classList.remove('light-theme');
+        if (icon) icon.innerText = '☀️';
+        if (text) text.innerText = 'Chế độ Sáng';
+        localStorage.setItem('uit_theme', 'dark');
+      }
+    }
+
+    // Tự động khởi tạo theme ngay khi tải mã nguồn
+    initTheme();
+
+    let currentTab = 'posts';
+    let currentPostsData = [];
+    let currentPostModalIndex = -1;
+    let searchDebounceTimer = null;
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const btnP = document.getElementById('tabBtnPosts');
+      const btnC = document.getElementById('tabBtnComments');
+      const btnS = document.getElementById('tabBtnSamples');
+      const sampleFilter = document.getElementById('sampleFilterContainer');
+      const commentFilter = document.getElementById('commentFilterContainer');
+      const searchInput = document.getElementById('searchInput');
+
+      btnP.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ' + (tab === 'posts' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white');
+      btnC.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ' + (tab === 'comments' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white');
+      btnS.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ' + (tab === 'samples' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white');
+
+      if (tab === 'samples') {
+        sampleFilter.classList.remove('hidden');
+        commentFilter.classList.add('hidden');
+        searchInput.placeholder = 'Tìm trong mẫu ABSA...';
+        applyFilters();
+      } else if (tab === 'comments') {
+        sampleFilter.classList.add('hidden');
+        commentFilter.classList.remove('hidden');
+        searchInput.placeholder = 'Tìm bình luận, người bình luận, Post ID...';
+        loadCommentsData();
+      } else {
+        sampleFilter.classList.add('hidden');
+        commentFilter.classList.add('hidden');
+        searchInput.placeholder = 'Tìm bài viết, tác giả, ID...';
+        loadPostsData();
+      }
+    }
+
+    function handleSearch() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        if (currentTab === 'samples') {
+          applyFilters();
+        } else if (currentTab === 'comments') {
+          loadCommentsData();
+        } else {
+          loadPostsData();
+        }
+      }, 300);
+    }
+
+    function reloadCurrentTab() {
+      switchTab(currentTab);
+    }
+
+    async function loadPostsData() {
+      const q = document.getElementById('searchInput').value.trim();
+      const th = document.getElementById('tableHeader');
+      const tb = document.getElementById('tableBody');
+      const rc = document.getElementById('recordCount');
+
+      th.innerHTML = `
+        <tr>
+          <th class="py-2.5 px-3 w-32">Post ID</th>
+          <th class="py-2.5 px-3 w-36">Tác giả & Thời gian</th>
+          <th class="py-2.5 px-3 w-36 text-center">Nhãn & Khía cạnh</th>
+          <th class="py-2.5 px-3 w-48">Cảm xúc (Từng loại)</th>
+          <th class="py-2.5 px-3 w-16 text-center">Shares</th>
+          <th class="py-2.5 px-3 w-16 text-center">Cmts</th>
+          <th class="py-2.5 px-3">Nội dung bài viết</th>
+          <th class="py-2.5 px-3 w-28 text-center">Thao tác</th>
+        </tr>
+      `;
+      tb.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-400">Đang tải danh sách bài viết từ database...</td></tr>';
+
+      try {
+        const url = '/api/posts?limit=100' + (q ? '&search=' + encodeURIComponent(q) : '');
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          currentPostsData = data.posts || [];
+          rc.innerText = `Hiển thị ${currentPostsData.length} / ${data.total || 4422} bài viết`;
+
+          if (currentPostsData.length === 0) {
+            tb.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-500">Không tìm thấy bài viết nào phù hợp</td></tr>';
+            return;
+          }
+
+          tb.innerHTML = currentPostsData.map((p, idx) => {
+            const rx = p.reactions_breakdown || {};
+            const like = Number(rx.like || 0);
+            const haha = Number(rx.haha || 0);
+            const sad = Number(rx.sad || 0);
+            const love = Number(rx.love || 0);
+            const sumRx = like + haha + sad + love + Number(rx.care || 0) + Number(rx.wow || 0) + Number(rx.angry || 0);
+            const totalRx = sumRx > 0 ? sumRx : Number(p.reactions || 0);
+
+            return `
+              <tr class="hover:bg-slate-800/40 transition-colors cursor-pointer group" onclick="openPostDetailModal('${p.post_id}')">
+                <td class="py-2.5 px-3 font-mono text-slate-400 font-semibold group-hover:text-indigo-400 transition-colors">
+                  ${p.post_id}
+                </td>
+                <td class="py-2.5 px-3">
+                  <div class="font-medium text-indigo-300">${p.author || '<span class="text-slate-500 italic">Ẩn danh</span>'}</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">${p.time_raw || ''}</div>
+                </td>
+                <td class="py-2.5 px-3 text-center">
+                  <div>${getLabelBadge(p.label)}</div>
+                  <div class="mt-1">${getAspectBadges(p.aspects)}</div>
+                </td>
+                <td class="py-2.5 px-3">
+                  <div class="flex flex-wrap gap-1">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-950/60 text-blue-300 border border-blue-800/50" title="Thích: ${like}">👍 ${like}</span>
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-950/60 text-amber-300 border border-amber-800/50" title="Haha: ${haha}">😆 ${haha}</span>
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-950/60 text-rose-300 border border-rose-800/50" title="Buồn: ${sad}">😢 ${sad}</span>
+                    ${love > 0 ? `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-pink-950/60 text-pink-300 border border-pink-800/50" title="Yêu thích: ${love}">❤️ ${love}</span>` : ''}
+                  </div>
+                  <div class="text-[10px] text-slate-400 mt-1 font-mono">Tổng: ${totalRx.toLocaleString()}</div>
+                </td>
+                <td class="py-2.5 px-3 text-center text-sky-400 font-bold font-mono">${Number(p.shares || 0).toLocaleString()}</td>
+                <td class="py-2.5 px-3 text-center text-emerald-400 font-bold font-mono">${Number(p.n_comments || 0).toLocaleString()}</td>
+                <td class="py-2.5 px-3 text-slate-200 leading-relaxed max-w-sm truncate" style="letter-spacing: 0.015em; word-spacing: 0.03em;" title="${(p.text || '').replace(/"/g, '&quot;')}">
+                  ${p.text ? p.text.slice(0, 110) + (p.text.length > 110 ? '...' : '') : '<em class="text-slate-500">(Không có text)</em>'}
+                </td>
+                <td class="py-2.5 px-3 text-center" onclick="event.stopPropagation()">
+                  <button onclick="openPostDetailModal('${p.post_id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-2.5 py-1.5 rounded-lg text-xs shadow-sm flex items-center gap-1 transition-all mx-auto">
+                    <span>🔍</span> Chi Tiết
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          return;
+        }
+      } catch (e) {
+        console.log('Error fetching posts:', e);
+      }
+      tb.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-amber-400">Không thể kết nối API.</td></tr>';
+    }
+
+    async function loadCommentsData() {
+      const q = document.getElementById('searchInput').value.trim();
+      const filterType = document.getElementById('filterCommentType').value;
+      const th = document.getElementById('tableHeader');
+      const tb = document.getElementById('tableBody');
+      const rc = document.getElementById('recordCount');
+
+      th.innerHTML = `
+        <tr>
+          <th class="py-2.5 px-3 w-32">Comment ID</th>
+          <th class="py-2.5 px-3 w-28">Post ID</th>
+          <th class="py-2.5 px-3 w-36 text-center">Phân cấp (Hierarchy)</th>
+          <th class="py-2.5 px-3 w-24 text-center">Cảm xúc</th>
+          <th class="py-2.5 px-3 w-36">Tác giả</th>
+          <th class="py-2.5 px-3 w-20 text-center">Thời gian</th>
+          <th class="py-2.5 px-3">Nội dung bình luận</th>
+        </tr>
+      `;
+      tb.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400">Đang tải danh sách bình luận kèm cấu trúc phân cấp...</td></tr>';
+
+      try {
+        let url = `/api/comments?limit=150&filter=${filterType}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          let cmts = data.comments || [];
+          if (q) {
+            const ql = q.toLowerCase();
+            cmts = cmts.filter(c => 
+              (c.text && c.text.toLowerCase().includes(ql)) || 
+              (c.author && c.author.toLowerCase().includes(ql)) || 
+              (c.post_id && c.post_id.includes(ql)) ||
+              (c.comment_id && c.comment_id.includes(ql)) ||
+              (c.parent_id && c.parent_id.includes(ql))
+            );
+          }
+          rc.innerText = `Hiển thị ${cmts.length} / 16.231 bình luận`;
+
+          if (cmts.length === 0) {
+            tb.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">Không tìm thấy bình luận nào phù hợp</td></tr>';
+            return;
+          }
+
+          tb.innerHTML = cmts.map(c => {
+            const isReply = Boolean(c.parent_id && c.parent_id.trim() !== '');
+            const hierarchyBadge = isReply 
+              ? `<span class="badge badge-reply" title="Phản hồi cho comment: ${c.parent_id}">↳ Phản hồi con</span><div class="text-[10px] text-purple-300 font-mono mt-0.5 truncate max-w-[130px]" title="${c.parent_id}">#${c.parent_id.slice(-8)}</div>`
+              : `<span class="badge badge-parent">💬 Bình luận gốc</span>`;
+
+            const reactionBadge = Number(c.reactions || 0) > 0
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono">❤️ ${c.reactions}</span>`
+              : `<span class="text-slate-500 text-[11px] font-mono">0</span>`;
+
+            let commentDisplayHtml = '';
+            const ctxt = (c.text || '').trim();
+            if (ctxt.startsWith('[') && (ctxt.includes('Sticker') || ctxt.includes('Hình ảnh') || ctxt.includes('GIF') || ctxt.includes('Tệp đính kèm') || ctxt.includes('Nhãn dán'))) {
+              commentDisplayHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono text-[11px]">🖼️ ${ctxt}</span>`;
+            } else if (!ctxt) {
+              commentDisplayHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono text-[11px]">🖼️ [Bình luận bằng Nhãn dán / Hình ảnh / File]</span>`;
+            } else {
+              commentDisplayHtml = ctxt.replace(/\n/g, '<br/>');
+            }
+
+            return `
+              <tr class="hover:bg-slate-800/40 transition-colors ${isReply ? 'bg-purple-950/10' : ''}">
+                <td class="py-2.5 px-3 font-mono text-slate-400 font-semibold">${c.comment_id}</td>
+                <td class="py-2.5 px-3 font-mono text-indigo-400">${c.post_id}</td>
+                <td class="py-2.5 px-3 text-center">${hierarchyBadge}</td>
+                <td class="py-2.5 px-3 text-center">${reactionBadge}</td>
+                <td class="py-2.5 px-3 font-medium text-emerald-300">${c.author || '<span class="text-slate-500 italic">Ẩn danh</span>'}</td>
+                <td class="py-2.5 px-3 text-center text-slate-400 text-[11px]">${c.time_raw || '—'}</td>
+                <td class="py-2.5 px-3 text-slate-200 leading-relaxed max-w-xl break-words ${isReply ? 'pl-5 border-l-2 border-purple-500/40' : ''}" style="letter-spacing: 0.015em; word-spacing: 0.035em; line-height: 1.7;">
+                  ${commentDisplayHtml}
+                </td>
+              </tr>
+            `;
+          }).join('');
+          return;
+        }
+      } catch (e) {
+        console.log('Error fetching comments:', e);
+      }
+      tb.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-amber-400">Không thể kết nối API comments.</td></tr>';
+    }
+
+    // Sample ABSA items
+    const allSamples = [
+      {"id": "1139837498578978", "label": "khong_lien_quan", "aspects": "", "text": "Học ít thội em"},
+      {"id": "1139837221912339", "label": "khong_lien_quan", "aspects": "", "text": "Minh Phúc mốt up bài đừng có bật ẩn danh nữa"},
+      {"id": "1139829868579741", "label": "trung_tinh", "aspects": "doan_hoi", "text": "đương nhiên là có đrl r em, cũng nhiều á, hình như đi đủ 5 buổi/kỳ là đc 25 đrl"},
+      {"id": "1139885655240829", "label": "trung_tinh", "aspects": "giang_vien|chuong_trinh|thi_cu", "text": "PLDC in hết slide của gv vào kiểu gì cg có còn TTHCM thì nếu có thể hãy mua cuốn hỏi đáp TTHCM a thi 2 môn này chỉ cầm tài liệu tra chứ ko ôn cái gì :))"},
+      {"id": "1139345371961524", "label": "khong_lien_quan", "aspects": "", "text": "Lúc mất cặp đừng có đăng bài kiếm nha"},
+      {"id": "1139278398634888", "label": "trung_tinh", "aspects": "thi_cu|hoc_phi", "text": "k tính điểm cộng thì trường mình bpv ra thấp hơn us nha b (us mình 85.xx, uit 81.xx thui) nếu b k có điểm cộng nào + hb k đc cao thì quy trường mình hơi thọt."},
+      {"id": "1138971111998950", "label": "trung_tinh", "aspects": "chuong_trinh|thi_cu", "text": "Đã từng rất khó khăn. Bắt đầu từ con số 0 tròn trĩnh. Cứ cố gắng từng ngày một thôi em. Môn này tỷ lệ học lại tầm 40% ấy."},
+      {"id": "1138340082062053", "label": "hoi_dap", "aspects": "giang_vien", "text": "Em học thầy cô nào?? Thầy cô [GV] cho quiz mỗi khi kết thúc chương không??"},
+      {"id": "1137564162139645", "label": "trung_tinh", "aspects": "co_so_vat_chat", "text": "Nhưng mà thư viện trung tâm đang sửa chữa gì thì phải, ko cho sv vào nha"},
+      {"id": "1137057862190275", "label": "trung_tinh", "aspects": "giang_vien", "text": "Này chỉ cần trình bày rõ ràng dễ đọc là đc r bạn, thầy demo thì có phương pháp thực hiện, minh chứng kết quả, giải thích kết quả cho từng câu á"}
+    ];
+
+    function getLabelBadge(lbl) {
+      const map = {
+        'khong_lien_quan': '<span class="badge badge-khong-lien-quan">Không liên quan</span>',
+        'trung_tinh': '<span class="badge badge-trung-tinh">Trung tính</span>',
+        'hoi_dap': '<span class="badge badge-hoi-dap">Hỏi đáp</span>',
+        'tich_cuc': '<span class="badge badge-tich-cuc">Tích cực</span>',
+        'tieu_cuc': '<span class="badge badge-tieu-cuc">Tiêu cực</span>'
+      };
+      return map[lbl] || `<span class="badge bg-slate-700">${lbl}</span>`;
+    }
+
+    function getAspectBadges(asp) {
+      if (!asp || asp === 'nan') return '<span class="text-slate-500 text-[11px]">—</span>';
+      return asp.split('|').filter(Boolean).map(a => `<span class="badge badge-aspect mr-1 mb-1">${a}</span>`).join('');
+    }
+
+    async function applyFilters() {
+      const labelFilter = document.getElementById('filterLabel').value;
+      const searchKey = document.getElementById('searchInput').value.trim();
+      const th = document.getElementById('tableHeader');
+      const tbody = document.getElementById('tableBody');
+      const rc = document.getElementById('recordCount');
+
+      th.innerHTML = `
+        <tr>
+          <th class="py-2.5 px-3 w-32">Sample ID</th>
+          <th class="py-2.5 px-3 w-36">Nhãn Cảm Xúc</th>
+          <th class="py-2.5 px-3 w-44">Khía Cạnh Đào Tạo</th>
+          <th class="py-2.5 px-3">Văn bản mẫu</th>
+        </tr>
+      `;
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400">Đang tải danh sách mẫu ABSA từ gold dataset...</td></tr>';
+
+      try {
+        let url = `/api/samples?limit=100&label=${labelFilter}` + (searchKey ? '&search=' + encodeURIComponent(searchKey) : '');
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          const samples = data.samples || [];
+          rc.innerText = `Hiển thị ${samples.length} / ${data.total || 4402} mẫu ABSA`;
+
+          if (samples.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-500">Không tìm thấy mẫu nào phù hợp bộ lọc</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = samples.map(item => `
+            <tr class="hover:bg-slate-800/40 transition-colors">
+              <td class="py-2.5 px-3 font-mono text-slate-400">${item.id}</td>
+              <td class="py-2.5 px-3">${getLabelBadge(item.label)}</td>
+              <td class="py-2.5 px-3">${getAspectBadges(item.aspects)}</td>
+              <td class="py-2.5 px-3 text-slate-200 leading-relaxed">${item.text || '<em class="text-slate-500">(bài viết không có text)</em>'}</td>
+            </tr>
+          `).join('');
+          return;
+        }
+      } catch (e) {
+        console.error('Error fetching samples:', e);
+      }
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-amber-400">Không thể tải dữ liệu mẫu ABSA.</td></tr>';
+    }
+
+    async function fetchLiveStats() {
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+          const data = await res.json();
+          
+          if (data.completed_posts) {
+            const el = document.getElementById('totalPostsVal');
+            if (el) el.innerText = Number(data.completed_posts).toLocaleString();
+            const badge = document.getElementById('postStatusBadge');
+            if (badge) badge.innerText = `${Number(data.completed_posts).toLocaleString()} Bài Đã Sẵn Sàng (100%)`;
+          }
+
+          if (data.total_posts) {
+            const el = document.getElementById('discoveredPostsVal');
+            if (el) el.innerText = 'Hoàn tất T6 - T10';
+          }
+
+          if (data.total_comments) {
+            const el = document.getElementById('totalCommentsVal');
+            if (el) el.innerText = Number(data.total_comments).toLocaleString();
+          }
+
+          if (data.total_reactions) {
+            const el = document.getElementById('totalReactionsVal');
+            if (el) el.innerText = Number(data.total_reactions).toLocaleString();
+          }
+
+          // Phân cấp và cảm xúc bình luận
+          if (data.comments_replies !== undefined) {
+            const el = document.getElementById('commentsRepliesVal');
+            if (el) el.innerText = `${Number(data.comments_replies).toLocaleString()} replies`;
+          }
+
+          if (data.comments_with_reactions !== undefined) {
+            const el = document.getElementById('commentsReactionsVal');
+            if (el) el.innerText = `${Number(data.comments_with_reactions).toLocaleString()} có react`;
+          }
+
+          const badge = document.getElementById('cmtEnrichPctBadge');
+          if (badge) {
+            const totalC = data.total_comments || 16231;
+            badge.innerText = `Đã đồng bộ 100% (${Number(totalC).toLocaleString()} bình luận)`;
+            badge.className = 'text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20';
+          }
+          const bar = document.getElementById('cmtProgressBar');
+          if (bar) bar.style.width = '100%';
+
+          if (data.oldest && data.newest && data.oldest !== 'N/A') {
+            const tr = document.getElementById('timeRangeVal');
+            if (tr) {
+              const oParts = data.oldest.slice(0, 10).split('-');
+              const nParts = data.newest.slice(0, 10).split('-');
+              const oStr = oParts.length === 3 ? `${oParts[2]}/${oParts[1]}/${oParts[0]}` : data.oldest.slice(0, 10);
+              const nStr = nParts.length === 3 ? `${nParts[2]}/${nParts[1]}/${nParts[0]}` : data.newest.slice(0, 10);
+              tr.innerText = `${oStr} → ${nStr}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.log('API sync notice:', e);
+      }
+    }
+
+    async function openPostDetailModal(postId) {
+      const modal = document.getElementById('postDetailModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Update current index
+      currentPostModalIndex = currentPostsData.findIndex(p => String(p.post_id) === String(postId));
+
+      // Reset loading state
+      document.getElementById('modalPostId').innerText = `#${postId}`;
+      document.getElementById('modalAuthor').innerText = 'Đang tải...';
+      document.getElementById('modalTime').innerText = '...';
+      document.getElementById('modalPermalink').href = '#';
+      document.getElementById('modalTotalReactions').innerText = '...';
+      document.getElementById('modalShares').innerText = '...';
+      document.getElementById('modalCommentsCount').innerText = '...';
+      document.getElementById('modalLabelBadge').innerHTML = '...';
+      document.getElementById('modalAspectsBadges').innerHTML = '...';
+      document.getElementById('modalNote').innerText = '';
+      document.getElementById('modalFullText').innerHTML = '<span class="text-slate-400">Đang tải toàn bộ thuộc tính bài viết...</span>';
+      document.getElementById('modalCommentsSummary').innerText = 'Đang tải bình luận...';
+      document.getElementById('modalCommentsList').innerHTML = '<div class="text-center py-6 text-slate-400">Đang tải cây bình luận...</div>';
+
+      try {
+        const res = await fetch(`/api/post_detail?post_id=${postId}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderModalData(data);
+          return;
+        }
+      } catch (e) {
+        console.error('Error fetching post detail:', e);
+      }
+
+      // Fallback to local data if API fails
+      const localPost = currentPostsData.find(p => String(p.post_id) === String(postId));
+      if (localPost) {
+        renderModalData({ post: localPost, comments: [], comments_summary: { total: 0, roots: 0, replies: 0 } });
+      }
+    }
+
+    function renderModalData(data) {
+      const p = data.post || {};
+      const rx = p.reactions_breakdown || {};
+      const comments = data.comments || [];
+      const summary = data.comments_summary || { total: comments.length, roots: 0, replies: 0 };
+
+      document.getElementById('modalPostId').innerText = `#${p.post_id}`;
+      document.getElementById('modalAuthor').innerText = p.author || 'Ẩn danh';
+      document.getElementById('modalTime').innerText = p.time_raw || 'Không rõ thời gian';
+      
+      const linkEl = document.getElementById('modalPermalink');
+      if (p.permalink) {
+        linkEl.href = p.permalink;
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+
+      // Reactions 7 types
+      const like = Number(rx.like || 0);
+      const haha = Number(rx.haha || 0);
+      const sad = Number(rx.sad || 0);
+      const love = Number(rx.love || 0);
+      const care = Number(rx.care || 0);
+      const wow = Number(rx.wow || 0);
+      const angry = Number(rx.angry || 0);
+      const sumBreakdown = like + haha + sad + love + care + wow + angry;
+      const totalRx = sumBreakdown > 0 ? sumBreakdown : Number(p.reactions || 0);
+
+      document.getElementById('modalRxLike').innerText = like.toLocaleString();
+      document.getElementById('modalRxHaha').innerText = haha.toLocaleString();
+      document.getElementById('modalRxSad').innerText = sad.toLocaleString();
+      document.getElementById('modalRxLove').innerText = love.toLocaleString();
+      document.getElementById('modalRxCare').innerText = care.toLocaleString();
+      document.getElementById('modalRxWow').innerText = wow.toLocaleString();
+      document.getElementById('modalRxAngry').innerText = angry.toLocaleString();
+
+      document.getElementById('modalTotalReactions').innerText = totalRx.toLocaleString();
+      document.getElementById('modalShares').innerText = Number(p.shares || 0).toLocaleString();
+      document.getElementById('modalCommentsCount').innerText = Number(p.n_comments || comments.length).toLocaleString();
+
+      // Label & Aspects
+      document.getElementById('modalLabelBadge').innerHTML = getLabelBadge(p.label);
+      document.getElementById('modalAspectsBadges').innerHTML = getAspectBadges(p.aspects);
+      document.getElementById('modalNote').innerText = p.note ? `📌 Ghi chú gán nhãn: ${p.note}` : '';
+
+      // Full text
+      const fullTextStr = p.text || '';
+      document.getElementById('modalFullText').innerText = fullTextStr || '(Bài viết không có nội dung văn bản)';
+      document.getElementById('modalTextLength').innerText = `${fullTextStr.length.toLocaleString()} ký tự`;
+
+      // Comments tree
+      document.getElementById('modalCommentsSummary').innerText = `Tổng số ${comments.length} bình luận (${summary.roots} bình luận gốc, ${summary.replies} câu phản hồi)`;
+
+      const cList = document.getElementById('modalCommentsList');
+      if (comments.length === 0) {
+        cList.innerHTML = '<div class="text-center py-6 text-slate-500 italic">Bài viết này chưa có bình luận nào hoặc chưa được cào bình luận.</div>';
+      } else {
+        cList.innerHTML = comments.map(c => {
+          const isReply = Boolean(c.parent_id && c.parent_id.trim() !== '');
+          const reactBadge = Number(c.reactions || 0) > 0 
+            ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">❤️ ${c.reactions}</span>` 
+            : '';
+
+          let contentHtml = '';
+          const txt = (c.text || '').trim();
+          if (txt.startsWith('[') && (txt.includes('Sticker') || txt.includes('Hình ảnh') || txt.includes('GIF') || txt.includes('Tệp đính kèm') || txt.includes('Nhãn dán'))) {
+            contentHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-950/60 text-amber-300 border border-amber-800/40 font-mono text-xs">🖼️ ${txt}</span>`;
+          } else if (!txt) {
+            contentHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono text-xs">🖼️ [Bình luận bằng Nhãn dán / Hình ảnh / File]</span>`;
+          } else {
+            contentHtml = txt.replace(/\n/g, '<br/>');
+          }
+
+          return `
+            <div class="p-3 rounded-lg bg-slate-950/70 border ${isReply ? 'border-purple-500/40 ml-6 pl-4 border-l-4' : 'border-slate-800'} space-y-1.5 transition-colors hover:bg-slate-900/90">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  ${isReply 
+                    ? `<span class="badge badge-reply text-[10px]">↳ Phản hồi #${c.parent_id.slice(-6)}</span>` 
+                    : `<span class="badge badge-parent text-[10px]">💬 Bình luận gốc</span>`}
+                  <span class="font-bold text-indigo-300">${c.author || 'Ẩn danh'}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${reactBadge}
+                  <span class="text-slate-500 text-[11px]">${c.time_raw || ''}</span>
+                </div>
+              </div>
+              <div class="text-slate-200 text-xs whitespace-pre-line pl-1" style="letter-spacing: 0.015em; line-height: 1.7; word-spacing: 0.035em; word-break: break-word;">${contentHtml}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    async function refreshCurrentPost() {
+      if (currentPostModalIndex < 0 || !currentPostsData[currentPostModalIndex]) return;
+      const pid = currentPostsData[currentPostModalIndex].post_id;
+      if (!pid) return;
+      const btn = document.getElementById('modalBtnRefresh');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Đang lấy từ FB...</span>';
+      }
+      try {
+        const res = await fetch(`/api/refresh_post?post_id=${pid}`);
+        if (res.ok) {
+          await openPostDetailModal(pid);
+          loadPostsData();
+        } else {
+          alert('Không thể làm mới bài viết từ Facebook. Bài viết có thể bị ẩn hoặc mạng chậm.');
+        }
+      } catch (e) {
+        console.error('Error refreshing post:', e);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>🔄 Làm mới từ FB</span>';
+        }
+      }
+    }
+
+    function closePostDetailModal() {
+      const modal = document.getElementById('postDetailModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function navigatePost(direction) {
+      if (!currentPostsData || currentPostsData.length === 0) return;
+      let nextIdx = currentPostModalIndex + direction;
+      if (nextIdx < 0) nextIdx = currentPostsData.length - 1;
+      if (nextIdx >= currentPostsData.length) nextIdx = 0;
+      const targetPost = currentPostsData[nextIdx];
+      if (targetPost) {
+        openPostDetailModal(targetPost.post_id);
+      }
+    }
+
+    // ==========================================
+    // IMAGE ZOOM MODAL CONTROLS (PHÓNG TO / THU NHỎ BIỂU ĐỒ)
+    // ==========================================
+    let currentZoomScale = 1.0;
+    let panStartX = 0;
+    let panStartY = 0;
+    let panCurrentX = 0;
+    let panCurrentY = 0;
+    let isPanning = false;
+
+    function openImageZoomModal(imgSrc, title) {
+      const modal = document.getElementById('imageZoomModal');
+      const img = document.getElementById('zoomModalImg');
+      const titleEl = document.getElementById('zoomModalTitle');
+      const dlLink = document.getElementById('zoomModalDownload');
+      if (!modal || !img) return;
+
+      img.src = imgSrc;
+      if (titleEl) titleEl.innerText = title || 'Xem Biểu Đồ Phóng To';
+      if (dlLink) dlLink.href = imgSrc;
+
+      resetImageZoom();
+      modal.classList.remove('hidden');
+    }
+
+    function closeImageZoomModal() {
+      const modal = document.getElementById('imageZoomModal');
+      if (modal) modal.classList.add('hidden');
+      isPanning = false;
+    }
+
+    function zoomImage(delta) {
+      currentZoomScale = Math.min(3.5, Math.max(0.4, Number((currentZoomScale + delta).toFixed(2))));
+      updateZoomTransform();
+    }
+
+    function resetImageZoom() {
+      currentZoomScale = 1.0;
+      panCurrentX = 0;
+      panCurrentY = 0;
+      updateZoomTransform();
+    }
+
+    function updateZoomTransform() {
+      const img = document.getElementById('zoomModalImg');
+      const text = document.getElementById('zoomLevelText');
+      if (img) {
+        img.style.transform = `scale(${currentZoomScale}) translate(${panCurrentX}px, ${panCurrentY}px)`;
+      }
+      if (text) {
+        text.innerText = `${Math.round(currentZoomScale * 100)}%`;
+      }
+    }
+
+    function handleImageWheel(e) {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.2 : -0.2;
+      zoomImage(delta);
+    }
+
+    function startImagePan(e) {
+      if (currentZoomScale <= 1.0) return;
+      isPanning = true;
+      panStartX = e.clientX - panCurrentX;
+      panStartY = e.clientY - panCurrentY;
+      const vp = document.getElementById('zoomViewport');
+      if (vp) vp.style.cursor = 'grabbing';
+
+      window.addEventListener('mousemove', onImagePanMove);
+      window.addEventListener('mouseup', onImagePanEnd);
+    }
+
+    function onImagePanMove(e) {
+      if (!isPanning) return;
+      panCurrentX = e.clientX - panStartX;
+      panCurrentY = e.clientY - panStartY;
+      updateZoomTransform();
+    }
+
+    function onImagePanEnd() {
+      isPanning = false;
+      const vp = document.getElementById('zoomViewport');
+      if (vp) vp.style.cursor = 'grab';
+      window.removeEventListener('mousemove', onImagePanMove);
+      window.removeEventListener('mouseup', onImagePanEnd);
+    }
+
+    // Modal keyboard shortcuts (Esc, Left, Right, +, -)
+    document.addEventListener('keydown', (e) => {
+      const imgModal = document.getElementById('imageZoomModal');
+      if (imgModal && !imgModal.classList.contains('hidden')) {
+        if (e.key === 'Escape') closeImageZoomModal();
+        if (e.key === '+' || e.key === '=') zoomImage(0.25);
+        if (e.key === '-' || e.key === '_') zoomImage(-0.25);
+        if (e.key === '0') resetImageZoom();
+        return;
+      }
+
+      const modal = document.getElementById('postDetailModal');
+      if (modal && !modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') closePostDetailModal();
+        if (e.key === 'ArrowLeft') navigatePost(-1);
+        if (e.key === 'ArrowRight') navigatePost(1);
+      }
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadPostsData();
+      fetchLiveStats();
+      setInterval(fetchLiveStats, 6000); // Tự động làm mới mỗi 6s
+    });
+  </script>
+</body>
+</html>

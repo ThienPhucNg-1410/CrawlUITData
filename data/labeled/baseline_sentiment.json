@@ -1,0 +1,132 @@
+{
+  "val": {
+    "macro_f1": 0.5588014981273409,
+    "report": {
+      "hoi_dap": {
+        "precision": 0.9069767441860465,
+        "recall": 0.8478260869565217,
+        "f1-score": 0.8764044943820225,
+        "support": 46.0
+      },
+      "tich_cuc": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1.0
+      },
+      "trung_tinh": {
+        "precision": 0.7407407407407407,
+        "recall": 0.8695652173913043,
+        "f1-score": 0.8,
+        "support": 23.0
+      },
+      "accuracy": 0.8428571428571429,
+      "macro avg": {
+        "precision": 0.5492391616422624,
+        "recall": 0.572463768115942,
+        "f1-score": 0.5588014981273409,
+        "support": 70.0
+      },
+      "weighted avg": {
+        "precision": 0.8393995324227882,
+        "recall": 0.8428571428571429,
+        "f1-score": 0.8387800963081862,
+        "support": 70.0
+      }
+    },
+    "confusion": [
+      [
+        39,
+        0,
+        0,
+        7
+      ],
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0,
+        20
+      ]
+    ],
+    "labels": [
+      "hoi_dap",
+      "tich_cuc",
+      "tieu_cuc",
+      "trung_tinh"
+    ]
+  },
+  "test": {
+    "macro_f1": 0.47058823529411764,
+    "report": {
+      "hoi_dap": {
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "f1-score": 0.9411764705882353,
+        "support": 9.0
+      },
+      "trung_tinh": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 0.0
+      },
+      "accuracy": 0.8888888888888888,
+      "macro avg": {
+        "precision": 0.5,
+        "recall": 0.4444444444444444,
+        "f1-score": 0.47058823529411764,
+        "support": 9.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "f1-score": 0.9411764705882353,
+        "support": 9.0
+      }
+    },
+    "confusion": [
+      [
+        8,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "labels": [
+      "hoi_dap",
+      "tich_cuc",
+      "tieu_cuc",
+      "trung_tinh"
+    ]
+  }
+}

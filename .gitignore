@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+
+# Facebook Browser Profiles & Authentication Secrets (DO NOT COMMIT)
+browser_profile/
+.chrome_cache/
+.temp_*/
+*.session
+*.cookies
+
+# Logs & Debugging artifacts
+logs/
+*.log
+launch_test.log
+test_*.json
+test_*.html
+test_*.png
+extracted_sample*.json
+
+# Database Backups & Temporary files
+*.sqlite-journal
+data/raw/raw_backup_*.sqlite
+data/raw/*.xlsx
+data/raw/.cooldown
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+.pytest_cache/
